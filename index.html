@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123c65">
+  <meta name="description" content="Mobile-friendly IRCTC Tatkal preparation assistant.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Tatkal Assistant</title>
+  <style>
+    :root { color-scheme: light; --navy:#123c65; --blue:#1769aa; --bg:#f3f6fa; --ink:#182434; --muted:#5b6878; --line:#dce3eb; --green:#167344; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+    header { background:var(--navy); color:white; padding:22px 18px 25px; border-radius:0 0 22px 22px; }
+    header h1 { margin:0 0 5px; font-size:24px; }
+    header p { margin:0; color:#d8e6f5; font-size:14px; }
+    main { max-width:620px; margin:0 auto; padding:14px; padding-bottom:40px; }
+    section { background:white; border:1px solid var(--line); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 2px 8px #142c4610; }
+    h2 { font-size:17px; margin:0 0 12px; }
+    label { display:block; font-weight:650; font-size:13px; margin:11px 0 5px; }
+    input, select, textarea, button { width:100%; font:inherit; border-radius:10px; padding:12px; }
+    input, select, textarea { border:1px solid #c9d3df; background:#fff; color:var(--ink); }
+    button { border:0; background:var(--blue); color:white; font-weight:700; cursor:pointer; margin-top:10px; }
+    button.secondary { background:#e9f0f7; color:var(--navy); }
+    button.safe { background:var(--green); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .muted { color:var(--muted); font-size:13px; }
+    .status { padding:12px; border-radius:10px; background:#eef4fa; font-size:14px; margin-top:10px; }
+    .timer { font-size:26px; font-weight:800; letter-spacing:.3px; }
+    .check { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid #edf0f4; }
+    .check:last-child { border-bottom:0; }
+    .check input { width:20px; height:20px; margin:2px 0 0; flex-shrink:0; }
+    .notice { border-left:4px solid #d89a16; background:#fff8e8; padding:11px; border-radius:8px; font-size:13px; }
+    a { color:var(--blue); }
+    footer { text-align:center; color:var(--muted); font-size:12px; padding:14px; }
+    @media (max-width:380px) { .grid { grid-template-columns:1fr; } header h1 { font-size:22px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🚆 Tatkal Assistant</h1>
+  <p>Prepare quickly. Book securely on official IRCTC.</p>
+</header>
+<main>
+  <section>
+    <h2>Quick launch</h2>
+    <button id="openIrctc">Open official IRCTC train search</button>
+    <p class="muted">This opens IRCTC in a new tab. This assistant cannot read or control the IRCTC tab from here.</p>
+  </section>
+
+  <section>
+    <h2>Journey preparation</h2>
+    <div class="grid">
+      <div><label for="from">From station</label><input id="from" autocomplete="off" placeholder="Station code or name"></div>
+      <div><label for="to">To station</label><input id="to" autocomplete="off" placeholder="Station code or name"></div>
+    </div>
+    <div class="grid">
+      <div><label for="journeyDate">Journey date</label><input id="journeyDate" type="date"></div>
+      <div><label for="travelClass">Class</label>
+        <select id="travelClass"><option value="3A">AC 3 Tier (3A)</option><option value="2A">AC 2 Tier (2A)</option><option value="1A">AC First Class (1A)</option><option value="CC">Chair Car (CC)</option><option value="SL">Sleeper (SL)</option><option value="2S">Second Sitting (2S)</option><option value="3E">AC 3 Economy (3E)</option></select>
+      </div>
+    </div>
+    <label for="quota">Quota</label>
+    <select id="quota"><option value="TQ">Tatkal</option><option value="PT">Premium Tatkal (if available)</option></select>
+    <button id="saveJourney" class="secondary">Save journey on this device</button>
+    <div id="journeyStatus" class="status" aria-live="polite">Journey details are stored only when you tap Save.</div>
+  </section>
+
+  <section>
+    <h2>Tatkal opening reminder</h2>
+    <p class="muted">Standard published opening times are commonly 10:00 AM for AC classes and 11:00 AM for non-AC classes, on the day before the train's departure from its originating station. Confirm current rules with IRCTC.</p>
+    <div class="grid">
+      <div><label for="reminderDate">Reminder date</label><input id="reminderDate" type="date"></div>
+      <div><label for="reminderTime">Reminder time (IST)</label><select id="reminderTime"><option value="10:00">10:00 AM — AC</option><option value="11:00">11:00 AM — Non-AC</option></select></div>
+    </div>
+    <button id="setReminder">Set reminder</button>
+    <div id="timerStatus" class="status" aria-live="polite">No reminder set.</div>
+    <p class="muted">For reliable notifications when the app is closed, a hosted PWA with push notifications or a native app is needed. This page can keep a countdown visible while open.</p>
+  </section>
+
+  <section>
+    <h2>Booking checklist</h2>
+    <label class="check"><input type="checkbox" data-check="login"> <span>Sign in to IRCTC before booking opens</span></label>
+    <label class="check"><input type="checkbox" data-check="search"> <span>Confirm train, date, class, and Tatkal quota</span></label>
+    <label class="check"><input type="checkbox" data-check="passengers"> <span>Keep passenger details ready</span></label>
+    <label class="check"><input type="checkbox" data-check="upi"> <span>Make sure your UPI app is available and working</span></label>
+    <label class="check"><input type="checkbox" data-check="network"> <span>Use a stable network; avoid repeated duplicate searches</span></label>
+    <button id="resetChecks" class="secondary">Reset checklist</button>
+  </section>
+
+  <section>
+    <h2>UPI payment readiness</h2>
+    <p>When IRCTC reaches its payment step:</p>
+    <ol>
+      <li>Choose UPI if it is offered.</li>
+      <li>Check the payee, amount, and booking details.</li>
+      <li>Approve the request in your UPI app or payment interface.</li>
+      <li>Never share your UPI PIN or OTP with this assistant.</li>
+    </ol>
+    <div class="notice">This app does not submit bookings, bypass queues or CAPTCHA, force the payment page to load, or authorize payment.</div>
+  </section>
+  <footer>Journey details and checklist are stored locally in this browser. Do not use a shared device for private information.</footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "IRCTC Tatkal Assistant",
+  "short_name": "Tatkal Assist",
+  "description": "Mobile-friendly Tatkal booking preparation assistant",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fa",
+  "theme_color": "#123c65",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}
